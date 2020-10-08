@@ -3,26 +3,31 @@ inherit_from: .rubocop_todo.yml
 
 # Exclude temporary files
 AllCops:
+  NewCops: enable
   Exclude:
     - tmp/**/*
+    - vendor/**/*
 
 # It’s quite readable when we know what we are doing
 Lint/AssignmentInCondition:
   Enabled: false
 
 # No need to handle LoadError in Rakefile
-Lint/HandleExceptions:
+Lint/SuppressedException:
   Exclude:
     - Rakefile
+    - spec/spec_helper.rb
+    - rakelib/rubocop.rake
+
+# we don't want to specify a specific ruby version
+Gemspec/RequiredRubyVersion:
+  Enabled: false
 
 # gemspec is a special snowflake
-Metrics/LineLength:
+Layout/LineLength:
+  Max: 100
   Exclude:
     - rom-yesql.gemspec
-
-# The enforced style doesn’t match Vim’s defaults
-Style/AlignParameters:
-  Enabled: false
 
 # UTF-8 is perfectly fine in comments
 Style/AsciiComments:
@@ -49,7 +54,7 @@ Style/MultilineBlockChain:
   Enabled: false
 
 # Result::Success and Result::Failure use > for callbacks
-Style/OpMethod:
+Naming/BinaryOperatorParameterName:
   Exclude:
     - lib/rom/command_registry.rb
 
@@ -58,7 +63,7 @@ Style/SignalException:
   EnforcedStyle: only_raise
 
 # Need to be skipped for >-> usage
-Style/SpaceAroundOperators:
+Layout/SpaceAroundOperators:
   Enabled: false
 
 # Accept both single and double quotes
@@ -70,5 +75,27 @@ Style/TrivialAccessors:
   Enabled: false
 
 # Allow rom-sql
-Style/FileName:
+Naming/FileName:
     Enabled: false
+
+# This is required to setup the tests
+Lint/BooleanSymbol:
+  Exclude:
+    - spec/unit/rom/yesql/repository_spec.rb
+
+# This is required to setup the tests
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - spec/integration/adapter_spec.rb
+    - spec/spec_helper.rb
+
+# We don't care about block length in specs
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*
+
+# This is a false positive for the SQL in the test
+Style/FormatStringToken:
+  Exclude:
+    - spec/integration/adapter_spec.rb
+

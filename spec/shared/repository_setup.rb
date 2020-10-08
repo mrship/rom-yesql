@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.shared_context 'gateway setup' do
   let(:root) { Pathname(__FILE__).dirname.join('../..') }
   let(:path) { root.join('spec/fixtures') }

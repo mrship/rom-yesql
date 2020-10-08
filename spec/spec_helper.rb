@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'bundler'
 Bundler.setup
 
 if RUBY_ENGINE == 'ruby' && ENV['COVERAGE'] == 'true'
   require 'yaml'
-  rubies = YAML.load(File.read(File.join(__dir__, '..', '.travis.yml')))['rvm']
+  rubies = YAML.safe_load(File.read(File.join(__dir__, '..', '.travis.yml')))['rvm']
   latest_mri = rubies.select { |v| v =~ /\A\d+\.\d+.\d+\z/ }.max
 
   if RUBY_VERSION == latest_mri
@@ -20,7 +22,7 @@ require 'logger'
 
 begin
   require 'byebug'
-rescue LoadError # rubocop:disable Lint/HandleExceptions
+rescue LoadError
 end
 
 LOGGER = Logger.new(File.open('./log/test.log', 'a'))
@@ -28,17 +30,8 @@ LOGGER = Logger.new(File.open('./log/test.log', 'a'))
 root = Pathname(__FILE__).dirname
 
 RSpec.configure do |config|
-  config.before do
-    module Test
-    end
-  end
-
-  config.after do
-    Object.send(:remove_const, :Test)
-  end
-
   config.disable_monkey_patching!
   config.warnings = true
 end
 
-Dir[root.join('shared/*.rb').to_s].each { |f| require f }
+Dir[root.join('shared/*.rb').to_s].sort.each { |f| require f }

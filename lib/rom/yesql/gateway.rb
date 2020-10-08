@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sequel'
 
 require 'rom/initializer'
@@ -96,7 +98,7 @@ module ROM
       #
       # @api private
       def dataset?(_name)
-        ! @dataset.nil?
+        !@dataset.nil?
       end
 
       private
@@ -105,18 +107,16 @@ module ROM
       #
       # @api private
       def load_queries(path)
-        if path.nil?
-          {}
-        else
-          Dir["#{path}/*"].each_with_object({}) do |dir, fs_queries|
-            dataset = File.basename(dir).to_sym
+        return {} if path.nil?
 
-            fs_queries[dataset] = Dir["#{dir}/**/*.sql"].each_with_object({}) do |file, ds_queries|
-              query_name = File.basename(file, '.*').to_sym
-              sql = File.read(file).strip
+        Dir["#{path}/*"].each_with_object({}) do |dir, fs_queries|
+          dataset = File.basename(dir).to_sym
 
-              ds_queries[query_name] = sql
-            end
+          fs_queries[dataset] = Dir["#{dir}/**/*.sql"].each_with_object({}) do |file, ds_queries|
+            query_name = File.basename(file, '.*').to_sym
+            sql = File.read(file).strip
+
+            ds_queries[query_name] = sql
           end
         end
       end
